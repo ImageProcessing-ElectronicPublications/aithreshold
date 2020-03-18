@@ -8,15 +8,13 @@ It gives better result then opencv cv::adaptiveThreshold
 
 Build:
 
-  cd src
-
   cmake .
 
   make
 
 Usage:
 
-  ./aithreshold ../images/image.png ../images/output.png
+  ./aithreshold images/image.png images/output.png
 
 image.png
 

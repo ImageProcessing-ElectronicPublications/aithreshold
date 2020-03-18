@@ -22,7 +22,7 @@ message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
 
 
 # Declare the executable target built from your sources
-add_executable(aithreshold main.cpp)
+add_executable(aithreshold src/aithreshold.cpp)
 
 # Link your application with OpenCV libraries
 target_link_libraries(aithreshold ${OpenCV_LIBS})

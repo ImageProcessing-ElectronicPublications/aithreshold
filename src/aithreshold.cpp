@@ -6,7 +6,7 @@
 using namespace std;
 
 
-void thresholdIntegral(cv::Mat &inputMat, cv::Mat &outputMat)
+void thresholdIntegral(cv::Mat &inputMat, cv::Mat &outputMat, float T, int part)
 {
     // accept only char type matrices
     CV_Assert(!inputMat.empty());
@@ -28,8 +28,7 @@ void thresholdIntegral(cv::Mat &inputMat, cv::Mat &outputMat)
     CV_Assert(sumMat.depth() == CV_32S);
     CV_Assert(sizeof(int) == 4);
 
-    int S = MAX(nRows, nCols)/8;
-    double T = 0.15;
+    int S = MAX(nRows, nCols) / part;
 
     // perform thresholding
     int s2 = S/2;
@@ -74,7 +73,7 @@ void thresholdIntegral(cv::Mat &inputMat, cv::Mat &outputMat)
             // I(x,y)=s(x2,y2)-s(x1,y2)-s(x2,y1)+s(x1,x1)
             sum = p_y2[x2] - p_y1[x2] - p_y2[x1] + p_y1[x1];
 
-            if ((int)(p_inputMat[j] * count) < (int)(sum*(1.0-T)))
+            if ((int)(p_inputMat[j] * count) < (int)(sum * (1.0f - T)))
                 p_outputMat[j] = 0;
             else
                 p_outputMat[j] = 255;
@@ -85,15 +84,24 @@ void thresholdIntegral(cv::Mat &inputMat, cv::Mat &outputMat)
 
 int main(int argc, char *argv[])
 {
+    float T = 0.15f;
+    int part = 8;
     printf("Adaptive Integral Threshold.\n");
     if (argc < 3)
     {
-        printf("Usage: aithreshold image_in image_out\n");
+        printf("Usage: aithreshold image_in image_out [T=0.15] [part=8]\n");
         return 0;
     }
-//! [load_image]
     // Load the image
     cv::Mat src = cv::imread(argv[1]);
+    if (argc > 3)
+    {
+        T = atof(argv[3]);
+    }
+    if (argc > 4)
+    {
+        part = atoi(argv[4]);
+    }
 
     // Check if image is loaded fine
     if(src.empty()) {
@@ -101,48 +109,23 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    // Show source image
-//    cv::imshow("src", src);
-//! [load_image]
-
-//! [gray]
     // Transform source image to gray if it is not
     cv::Mat gray;
 
     if (src.channels() == 3)
     {
         cv::cvtColor(src, gray, CV_BGR2GRAY);
-        // Show gray image
-//        cv::imshow("gray", gray);
     }
     else
     {
         gray = src;
     }
 
-//    cout << "TEST" << endl;
-
-//! [gray] 
-
-//! [bin_1]
-//    cv::Mat bw1;
-//    cv::adaptiveThreshold(gray, bw1, 255, CV_ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 15, -2);
-
-    // Show binary image
-//    cv::imshow("binary opencv", bw1);
-//! [bin_1] 
-
-
-//! [bin_2]
     cv::Mat bw2 = cv::Mat::zeros(gray.size(), CV_8UC1);
-    thresholdIntegral(gray, bw2);
+    thresholdIntegral(gray, bw2, T, part);
     printf("%s -> %s\n", argv[1], argv[2]);
 
-    // Show binary image
-//    cv::imshow("binary integral", bw2);
-//! [bin_2] 
-
-//    cv::waitKey(0);
+    // Write threshold image
     cv::imwrite(argv[2],bw2);
     return 0;
 }
