@@ -14,6 +14,10 @@ Build:
 
 Usage:
 
+  ./aithreshold in.png out.png [T=0.15] [part=8] [blur=0]
+
+Example:
+
   ./aithreshold images/image.png images/output.png
 
 image.png
