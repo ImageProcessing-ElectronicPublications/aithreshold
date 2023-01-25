@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 
     if (src.channels() == 3)
     {
-        cv::cvtColor(src, gray, CV_BGR2GRAY);
+        cv::cvtColor(src, gray, cv::COLOR_BGR2GRAY);
     }
     else
     {
